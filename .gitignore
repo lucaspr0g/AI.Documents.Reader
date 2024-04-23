@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/AI.Documents.Reader.Domain/bin
+/AI.Documents.Reader.Domain/obj
+/AI.Documents.Reader/Properties
