@@ -4,7 +4,7 @@ namespace AI.Documents.Reader.Domain.Interfaces
 {
 	public interface IDocumentReaderService
 	{
-		Task<DocumentResponse> ReadFromUrlAsync(string url, CancellationToken cancellationToken);
-		Task<DocumentResponse> ReadFileAsync(DocumentRequest req, CancellationToken cancellationToken);
+		Task<IEnumerable<DocumentResponse>> ReadFromUrlAsync(string url, CancellationToken cancellationToken);
+		Task<IEnumerable<DocumentResponse>> ReadFileAsync(DocumentRequest req, CancellationToken cancellationToken);
 	}
 }

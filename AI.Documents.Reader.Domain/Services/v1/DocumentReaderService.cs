@@ -4,7 +4,6 @@ using Azure;
 using Microsoft.Extensions.Configuration;
 using AI.Documents.Reader.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
-using System;
 
 namespace AI.Documents.Reader.Domain.Services.v1
 {
@@ -26,12 +25,12 @@ namespace AI.Documents.Reader.Domain.Services.v1
 			_client = new DocumentAnalysisClient(new Uri(configuration["AiServiceEndpoint"]!), credential);
 		}
 
-		public async Task<DocumentResponse> ReadFromUrlAsync(string url, CancellationToken cancellationToken)
+		public async Task<IEnumerable<DocumentResponse>> ReadFromUrlAsync(string url, CancellationToken cancellationToken)
 		{
 			if (string.IsNullOrWhiteSpace(url))
 				throw new ArgumentNullException(nameof(url));
 
-			_cache.TryGetValue(url, out DocumentResponse? response);
+			_cache.TryGetValue(url, out IEnumerable<DocumentResponse>? response);
 
 			if (response is not null)
 				return response;
@@ -49,12 +48,12 @@ namespace AI.Documents.Reader.Domain.Services.v1
 			return response;
 		}
 
-		public async Task<DocumentResponse> ReadFileAsync(DocumentRequest req, CancellationToken cancellationToken)
+		public async Task<IEnumerable<DocumentResponse>> ReadFileAsync(DocumentRequest req, CancellationToken cancellationToken)
 		{
 			if (!req.IsValid())
 				throw new ArgumentNullException(nameof(req));
 
-			_cache.TryGetValue(req.File!, out DocumentResponse? response);
+			_cache.TryGetValue(req.File!, out IEnumerable<DocumentResponse>? response);
 
 			if (response is not null)
 				return response;
@@ -79,29 +78,16 @@ namespace AI.Documents.Reader.Domain.Services.v1
 				throw new InvalidDataException("Unexpected error.");
 		}
 
-		private static DocumentResponse MapResponse(AnalyzeResult result)
+		private static IEnumerable<DocumentResponse> MapResponse(AnalyzeResult result)
 		{
-			var response = new DocumentResponse();
-
-			foreach (var table in result.Tables)
-			{
-				foreach (var cell in table.Cells)
-				{
-					response.Tables.Add(cell.Content);
-				}
-			}
-
 			foreach (var key in result.KeyValuePairs)
 			{
-				response.KeyValuePairs.Add(new Entities.KeyValuePair
+				yield return new DocumentResponse
 				{
-					Confidence = key.Confidence,
 					Key = key.Key?.Content,
 					Value = key.Value?.Content
-				});
+				};
 			}
-
-			return response;
 		}
 	}
 }

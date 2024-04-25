@@ -2,14 +2,8 @@
 {
 	public class DocumentResponse
 	{
-		public List<string> Tables { get; set; }
+		public string? Key { get; set; }
 
-		public List<KeyValuePair> KeyValuePairs { get; set; }
-
-        public DocumentResponse()
-        {
-			Tables = [];
-			KeyValuePairs = [];
-        }
-    }
+		public string? Value { get; set; }
+	}
 }
